@@ -1,0 +1,10 @@
+{
+  "id": "com.example.hlsstreamplayer",
+  "version": "1.0.0",
+  "vendor": "Personal Project",
+  "type": "web",
+  "main": "index.html",
+  "title": "HLS Stream Player",
+  "icon": "icon.png",
+  "disableBackHistoryAPI": true
+}

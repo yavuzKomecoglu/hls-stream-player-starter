@@ -1,0 +1,14 @@
+#EXTM3U
+#EXTINF:-1 tvg-logo="https://example.com/haber.png" group-title="TR | Haber",Haber Kanalı HD
+https://example.com/live/demo/demo/1001.m3u8
+#EXTINF:-1 group-title="TR | Bilim Kurgu",Örnek Film (2010)
+https://example.com/movie/demo/demo/2001.mkv
+#EXTINF:-1 group-title="TR | Dram",Örnek Dizi S01 E02
+https://example.com/series/demo/demo/3002.mp4
+#EXTINF:-1 group-title="EN | Drama",Another Show 1x05
+https://example.com/vod/4005.mp4
+#EXTINF:-1 group-title="TR | Dram",Başka Dizi Sezon 2 Bölüm 7
+https://example.com/vod/5007.mp4
+#EXTINF:-1 group-title="TR | Test",Test Yayını
+#EXTVLCOPT:http-user-agent=MyAgent/1.0
+https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
