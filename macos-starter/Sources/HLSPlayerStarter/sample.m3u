@@ -1,0 +1,13 @@
+#EXTM3U
+#EXTINF:-1 group-title="TR | Haber",Haber Kanalı
+https://example.com/live/1001.m3u8
+#EXTINF:-1 group-title="TR | Filmler",Örnek Film (2020)
+https://example.com/movie/2001.mp4
+#EXTINF:-1 group-title="TR | Diziler",Örnek Dizi S01E02
+https://example.com/vod/3001.mp4
+#EXTINF:-1 group-title="EN | Drama",Another Show 1x05
+https://example.com/vod/3002.mkv
+#EXTINF:-1 group-title="TR | Diziler",Başka Dizi Sezon 2 Bölüm 7
+https://example.com/vod/3003.mp4
+#EXTINF:-1 group-title="Test",Mux Test Yayını
+https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
