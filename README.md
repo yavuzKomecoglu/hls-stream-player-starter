@@ -1,29 +1,41 @@
-# HLS Stream Player – Başlangıç Kodları
+# HLS Stream Player Starter
 
-LG webOS TV için kendi HLS oynatıcınızı yazmaya başlamanız için küçük, çalışan örnekler.
-Blog yazısı: _[yazının bağlantısı]_
+Blog yazısındaki örneklerin çalıştırılabilir hâlleri. Her klasör tek başına denenebilir, harici bağımlılık yoktur.
 
-> Bu repo herhangi bir yayın veya playlist içermez. Denemelerinizde örnek akışları
-> ya da kullanma hakkınız olan yayınları kullanın.
+| Klasör | Ne var | Nasıl çalışır |
+|---|---|---|
+| `m3u-parser/` | M3U ayrıştırma ve live / movie / series sınıflandırma (Node.js) | `node parse-m3u.mjs` |
+| `webos-starter/` | LG TV'ye yüklenebilen, kumandayla çalışan küçük HLS oynatıcı | `ares-package app -o out` |
+| `macos-starter/` | SwiftUI + AVPlayer ile playlist listesi ve oynatıcı | `swift run` |
+| `samples/` | Örnek playlist (`sample.m3u`) | |
 
-## İçerik
+Playlist'lerdeki adresler `example.com` ve Mux'ın herkese açık test akışıdır (`https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8`). Gerçekten oynayan tek öğe bu test akışıdır. Depo herhangi bir yayın veya playlist içermez; denemelerinizde örnek akışları ya da kullanma hakkınız olan yayınları kullanın.
 
-| Klasör | Ne var? |
-|---|---|
-| `m3u-parser/` | M3U ayrıştırıcı, dizi/film/canlı sınıflandırıcı, Türkçe duyarsız arama, kategori öneki bulma ve testleri |
-| `webos-starter/` | LG TV'ye kurulabilen minimal webOS uygulaması: kumandayla gezinme, Back tuşu, HLS test akışını oynatma |
+## m3u-parser
 
-## 1. M3U ayrıştırıcıyı deneyin
+Node.js 18 veya üstü yeterli.
 
-Node.js 18 veya üzeri yeterli, başka bağımlılık yok.
-
-```bash
+```sh
 cd m3u-parser
-node parse-m3u.mjs sample.m3u   # playlist'i tablo olarak gösterir
-node --test                      # 4 test, hepsi geçmeli
+node parse-m3u.mjs                        # varsayılan: sample.m3u
+node parse-m3u.mjs ../samples/sample.m3u  # başka bir dosya
 ```
 
-## 2. webOS uygulamasını TV'ye kurun
+Her `#EXTINF` satırından ad ve `group-title` okunur, sonraki satır adres kabul edilir. Sonuç `name / group / type` tablosu olarak basılır. Sınıflandırma kuralları:
+
+- **series:** adres `/series/` içeriyor ya da ad `S01E02`, `1x05`, `Sezon 2 Bölüm 7` kalıplarından birine uyuyor
+- **movie:** adres `/movie/` içeriyor ya da `.mp4` / `.mkv` ile bitiyor
+- **live:** geri kalan her şey
+
+## webos-starter
+
+Uygulama dosyaları `webos-starter/app/` altında: `appinfo.json`, `index.html`, `icon.png`. Tek ekranda iki buton ve bir `<video>` var; webOS HLS'i yerel olarak oynattığı için ek kütüphane gerekmez.
+
+| Tuş | İşlev |
+|---|---|
+| ← / → | Butonlar arasında gezinme |
+| OK | Seçili butonu çalıştırır (Başlat / Durdur) |
+| Back | Oynatmayı durdurur |
 
 **TV tarafı (bir kere):**
 
@@ -34,38 +46,46 @@ node --test                      # 4 test, hepsi geçmeli
 
 **Bilgisayar tarafı (bir kere):**
 
-```bash
+```sh
 npm install -g @webos-tools/cli
-ares -V                              # sürüm görünüyorsa kurulum tamam
 ares-setup-device                    # add → ad: lgTV, IP: TV'nin IP'si, port: 9922, kullanıcı: prisoner
 ares-novacom --device lgTV --getkey  # passphrase'i sorar
 ares-device --system-info --device lgTV
 ```
 
-> SSH kullanıcısı mutlaka `prisoner` olmalı. Başka bir ad `Not supported auth type` hatası verir.
-
 **Paketle, kur, çalıştır:**
 
-```bash
+```sh
 cd webos-starter
-ares-package . -o ../out
-ares-install -d lgTV ../out/com.example.hlsstreamplayer_1.0.0_all.ipk
-ares-launch  -d lgTV com.example.hlsstreamplayer
+ares-package app -o out
+ares-install -d lgTV out/com.example.hlsplayer_1.0.0_all.ipk
+ares-launch -d lgTV com.example.hlsplayer
 ```
 
 **Hata ayıklama ve kaldırma:**
 
-```bash
-ares-inspect -d lgTV --app com.example.hlsstreamplayer --open
-ares-install -d lgTV --remove com.example.hlsstreamplayer
+```sh
+ares-inspect -d lgTV --app com.example.hlsplayer --open
+ares-install -d lgTV --remove com.example.hlsplayer
 ```
 
-## Sık karşılaşılan sorunlar
+**Sık karşılaşılan sorunlar:**
 
-- **Bağlanamıyorum:** Geliştirici Modu oturumu sürelidir. TV'de Developer Mode uygulamasını açıp *Extend Session* deyin.
-- **`path does not exist`:** webOS'a `.ipk` kurulur. Yanlışlıkla `.apk` göndermiş olabilirsiniz.
+- **Bağlanamıyorum:** Developer Mode oturumu sürelidir. TV'de Developer Mode uygulamasını açıp *Extend Session* deyin.
+- **`Not supported auth type`:** SSH kullanıcısı `prisoner` olmalı.
 - **Back tuşu uygulamayı kapatıyor:** `appinfo.json` içinde `"disableBackHistoryAPI": true` olmalı. Böylece Back tuşu uygulamaya `keyCode 461` olarak gelir.
+
+## macos-starter
+
+macOS 14+ ve Xcode komut satırı araçları (Swift 5.9+) gerekir.
+
+```sh
+cd macos-starter
+swift run
+```
+
+Playlist, paketin içine gömülü `Sources/HLSPlayerStarter/sample.m3u` dosyasından okunur. Soldaki listeden bir öğe seçince sağdaki `VideoPlayer`'da oynatılır. Xcode'da açmak için `open Package.swift`.
 
 ## Lisans
 
-MIT
+MIT. Ayrıntılar için [LICENSE](LICENSE).
